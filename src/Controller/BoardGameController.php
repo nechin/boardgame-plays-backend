@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\BoardGame;
 use App\Repository\BoardGameRepository;
+use App\Service\BoardGameService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
@@ -20,18 +21,17 @@ class BoardGameController extends AbstractController
 
         $gamesCollection = $this->getDoctrine()
             ->getRepository(BoardGame::class)
-            ->findAll();
+            ->getAllSortByName();
 
-        foreach ($gamesCollection as $game) {
-            $games[] = [
-                'id' => $game->getId(),
-                'name' => $game->getName(),
-                'year' => $game->getYear()
-            ];
+        if (count($gamesCollection)) {
+            $gameService = new BoardGameService();
+            foreach ($gamesCollection as $game) {
+                $games[] = $gameService->getGameData($game);
+            }
         }
 
         return $this->json([
-            'data' => $games,
+            'games' => $games,
         ]);
     }
 
@@ -45,10 +45,10 @@ class BoardGameController extends AbstractController
     {
         $game = $gameRepository->find($id);
 
-        return $this->json([
-            'id' => $game->getId(),
-            'name' => $game->getName(),
-            'year' => $game->getYear()
-        ]);
+        if (!$game) {
+            return $this->json('The game not found', 404);
+        }
+
+        return $this->json((new BoardGameService())->getGameData($game));
     }
 }

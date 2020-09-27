@@ -16,61 +16,70 @@ class Play
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      */
-    private $id;
+    private ?int $id;
 
     /**
      * @ORM\Column(type="datetime")
      */
-    private $Date;
+    private \DateTime $date;
 
     /**
      * @ORM\Column(type="smallint")
      */
-    private $Count;
+    private int $count;
 
     /**
      * @ORM\ManyToOne(targetEntity=BoardGame::class, inversedBy="plays")
      * @ORM\JoinColumn(nullable=false)
      */
-    private $BoardGame;
+    private ?BoardGame $boardGame;
+
+    /**
+     * Play constructor.
+     */
+    public function __construct()
+    {
+        $this->date = new \DateTime();
+        $this->count = 1;
+    }
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getDate(): ?\DateTimeInterface
+    public function getDate(): ?\DateTime
     {
-        return $this->Date;
+        return $this->date;
     }
 
-    public function setDate(\DateTimeInterface $Date): self
+    public function setDate(\DateTime $date): self
     {
-        $this->Date = $Date;
+        $this->date = $date;
 
         return $this;
     }
 
     public function getCount(): ?int
     {
-        return $this->Count;
+        return $this->count;
     }
 
-    public function setCount(int $Count): self
+    public function setCount(int $count): self
     {
-        $this->Count = $Count;
+        $this->count = $count;
 
         return $this;
     }
 
     public function getBoardGame(): ?BoardGame
     {
-        return $this->BoardGame;
+        return $this->boardGame;
     }
 
-    public function setBoardGame(?BoardGame $BoardGame): self
+    public function setBoardGame(?BoardGame $boardGame): self
     {
-        $this->BoardGame = $BoardGame;
+        $this->boardGame = $boardGame;
 
         return $this;
     }

@@ -18,22 +18,37 @@ class BoardGame
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
      */
-    private $id;
+    private ?int $id;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255, unique=true)
      */
-    private $Name;
+    private ?string $name;
 
     /**
      * @ORM\Column(type="integer")
      */
-    private $Year;
+    private ?int $year;
 
     /**
-     * @ORM\OneToMany(targetEntity=Play::class, mappedBy="BoardGame")
+     * @ORM\OneToMany(targetEntity=Play::class, mappedBy="boardGame")
      */
-    private $plays;
+    private Collection $plays;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private ?string $title;
+
+    /**
+     * @ORM\Column(type="text", nullable=true)
+     */
+    private ?string $description;
+
+    /**
+     * @ORM\Column(type="datetime")
+     */
+    private ?\DateTimeInterface $created_at;
 
     public function __construct()
     {
@@ -47,24 +62,24 @@ class BoardGame
 
     public function getName(): ?string
     {
-        return $this->Name;
+        return $this->name;
     }
 
-    public function setName(string $Name): self
+    public function setName(string $name): self
     {
-        $this->Name = $Name;
+        $this->name = $name;
 
         return $this;
     }
 
     public function getYear(): ?int
     {
-        return $this->Year;
+        return $this->year;
     }
 
-    public function setYear(int $Year): self
+    public function setYear(int $year): self
     {
-        $this->Year = $Year;
+        $this->year = $year;
 
         return $this;
     }
@@ -96,6 +111,42 @@ class BoardGame
                 $play->setBoardGame(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getTitle(): ?string
+    {
+        return $this->title;
+    }
+
+    public function setTitle(string $title): self
+    {
+        $this->title = $title;
+
+        return $this;
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    public function setDescription(?string $description): self
+    {
+        $this->description = $description;
+
+        return $this;
+    }
+
+    public function getCreatedAt(): ?\DateTimeInterface
+    {
+        return $this->created_at;
+    }
+
+    public function setCreatedAt(\DateTimeInterface $created_at): self
+    {
+        $this->created_at = $created_at;
 
         return $this;
     }
