@@ -1,5 +1,5 @@
 # Boardgame plays [backend]
-Boardgames plays list and statistics API
+Boardgames plays API service (list and statistics)
 
 # Versions
 `Symfony 5.1.5`
