@@ -4,7 +4,7 @@ namespace App\Controller;
 
 use App\Entity\BoardGame;
 use App\Entity\Play;
-use Nechin\SmartHash\SmartHash;
+use App\Service\HashCodeService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -23,18 +23,21 @@ class PlayController extends AbstractController
         $game = $this->getDoctrine()
             ->getRepository(BoardGame::class)
             ->find($id);
-
         if (!$game) {
-            return $this->json('The game not found', 404);
-        }
-
-        // Simplest security
-        $code = $request->get('code');
-        if (!$code || $code !== SmartHash::hash($game->getName() . getenv('APP_SECRET'), 16)) {
-            return $this->json('Unauthorized access', 401);
+            return $this->json([
+                'error' => 'The game not found'
+            ], 404);
         }
 
         $entityManager = $this->getDoctrine()->getManager();
+
+        // Simplest security
+        $code = $request->get('code', '');
+        if (!$code || $code !== (new HashCodeService())->getCode($entityManager)) {
+            return $this->json([
+                'error' => 'Unauthorized access'
+            ], 401);
+        }
 
         $play = new Play();
         $play->setBoardGame($game);
@@ -42,6 +45,8 @@ class PlayController extends AbstractController
         $entityManager->persist($play);
         $entityManager->flush();
 
-        return $this->json('Play saved');
+        return $this->json([
+            'message' => 'Play saved',
+        ]);
     }
 }

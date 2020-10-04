@@ -3,7 +3,7 @@
 namespace App\Service;
 
 use App\Entity\BoardGame;
-use Nechin\SmartHash\SmartHash;
+use DateTime;
 
 class BoardGameService
 {
@@ -39,7 +39,7 @@ class BoardGameService
      */
     private function getStatus(string $lastPlayDate): int
     {
-        $time = $lastPlayDate ? \DateTime::createFromFormat($this->dateFormat, $lastPlayDate)->getTimestamp() : 0;
+        $time = $lastPlayDate ? DateTime::createFromFormat($this->dateFormat, $lastPlayDate)->getTimestamp() : 0;
 
         if (time() - 60 * 60 * 24 * 365 > $time) { // More then year
             return self::GAME_PLAY_STATUS_MORE_THEN_YEAR;
@@ -63,8 +63,7 @@ class BoardGameService
             'title' => $game->getTitle(),
             'year' => $game->getYear(),
             'date' => $lastPlayDate,
-            'status' => $this->getStatus($lastPlayDate),
-            'hash' => SmartHash::hash($game->getName() . getenv('APP_SECRET'), 16)
+            'status' => $this->getStatus($lastPlayDate)
         ];
     }
 }

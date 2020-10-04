@@ -46,9 +46,13 @@ class BoardGameController extends AbstractController
         $game = $gameRepository->find($id);
 
         if (!$game) {
-            return $this->json('The game not found', 404);
+            return $this->json([
+                'error' => 'The game not found'
+            ], 404);
         }
 
-        return $this->json((new BoardGameService())->getGameData($game));
+        return $this->json(
+            (new BoardGameService())->getGameData($game)
+        );
     }
 }
