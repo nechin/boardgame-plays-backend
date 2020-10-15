@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\BoardGame;
 use App\Repository\BoardGameRepository;
 use App\Service\BoardGameService;
+use App\Service\HashCodeService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
@@ -12,7 +13,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class BoardGameController extends AbstractController
 {
     /**
-     * @Route("/games", name="board_game", methods={"GET"})
+     * @Route("/api/games", name="board_game", methods={"GET"})
      * @return JsonResponse
      */
     public function index(): JsonResponse
@@ -30,13 +31,16 @@ class BoardGameController extends AbstractController
             }
         }
 
+        $entityManager = $this->getDoctrine()->getManager();
+
         return $this->json([
             'games' => $games,
-        ]);
+            'code' => (new HashCodeService($entityManager))->getCode(),
+        ], 200, ['Access-Control-Allow-Origin' => '*']);
     }
 
     /**
-     * @Route("/game/{id}", name="game_show", methods={"GET"})
+     * @Route("/api/game/{id}", name="game_show", methods={"GET"})
      * @param int $id
      * @param BoardGameRepository $gameRepository
      * @return JsonResponse

@@ -3,28 +3,40 @@
 namespace App\Service;
 
 use App\Entity\HashCode;
+use Doctrine\Persistence\ObjectManager;
 
 class HashCodeService
 {
     const HASH_CODE_LIFE_TIME = 3600; // One hour
 
-    public function clearCodes($entityManager): void
+    private ObjectManager $em;
+
+    /**
+     * HashCodeService constructor.
+     * @param ObjectManager $em
+     */
+    public function __construct(ObjectManager $em)
     {
-        $entities = $entityManager->getRepository(HashCode::class)->findAll();
-        foreach ($entities as $entity) {
-            $entityManager->remove($entity);
-        }
-        $entityManager->flush();
+        $this->em = $em;
     }
 
-    public function getCode($entityManager): ?string
+    public function clearCodes(): void
     {
-        $hashCode = $entityManager->getRepository(HashCode::class)->findOneBy([]);
+        $entities = $this->em->getRepository(HashCode::class)->findAll();
+        foreach ($entities as $entity) {
+            $this->em->remove($entity);
+        }
+        $this->em->flush();
+    }
+
+    public function getCode(): string
+    {
+        $hashCode = $this->em->getRepository(HashCode::class)->findOneBy([]);
         if (
             $hashCode->getCreatedAt()->getTimestamp() + self::HASH_CODE_LIFE_TIME < time()
             || !$hashCode->getCode()
         ) {
-            return null;
+            return '';
         }
 
         return $hashCode->getCode();

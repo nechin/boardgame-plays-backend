@@ -13,7 +13,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class PlayController extends AbstractController
 {
     /**
-     * @Route("/play/{id}", name="add_play", methods={"POST"})
+     * @Route("/api/play/{id}", name="add_play", methods={"POST"})
      * @param Request $request
      * @param int $id
      * @return JsonResponse
@@ -33,7 +33,7 @@ class PlayController extends AbstractController
 
         // Simplest security
         $code = $request->get('code', '');
-        if (!$code || $code !== (new HashCodeService())->getCode($entityManager)) {
+        if (!$code || $code !== (new HashCodeService($entityManager))->getCode()) {
             return $this->json([
                 'error' => 'Unauthorized access'
             ], 401);

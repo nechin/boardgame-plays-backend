@@ -21,7 +21,7 @@ class HashCodeController extends AbstractController
     {
         $entityManager = $this->getDoctrine()->getManager();
 
-        (new HashCodeService())->clearCodes($entityManager);
+        (new HashCodeService($entityManager))->clearCodes();
 
         $play = new HashCode();
         $code = SmartHash::hash($request->getClientIp() . getenv('APP_SECRET'), 16);
